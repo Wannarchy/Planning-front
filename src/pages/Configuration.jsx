@@ -128,18 +128,11 @@ function Configuration() {
                   <div style={{ fontSize: '0.8rem', color: '#6c757d' }}>
                     {botConnecte
                       ? statut.bot.botHttp.tag
-                      : statut?.bot?.botHttp?.error || 'Lancez npm run bot'}
+                      : 'Non disponible'}
                   </div>
                 </div>
               </Col>
             </Row>
-          )}
-          {!botConnecte && statut && (
-            <div className="alert alert-warning mt-3 mb-0" style={{ fontSize: '0.85rem' }}>
-              Le bot doit tourner avec <code>npm run bot</code> (port 3001).
-              Sur Railway, configurez <code>BOT_ALERT_URL</code> vers l'URL publique du bot.
-              URL testée : <code>{statut.bot?.botHttp?.url}</code>
-            </div>
           )}
         </Card.Body>
       </Card>
@@ -163,9 +156,6 @@ function Configuration() {
                   />
                 </div>
               ))}
-              <p className="text-muted mb-0" style={{ fontSize: '0.75rem' }}>
-                Les toggles sont indicatifs (non persistés en BDD pour l'instant).
-              </p>
             </Card.Body>
           </Card>
         </Col>
