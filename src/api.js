@@ -26,5 +26,11 @@ export const getStats = (type) =>
 export const getLogs = () =>
     fetch(`${BASE_URL}/logs`, { headers: headers() }).then((r) => r.json());
 
+export const getApiStatus = () =>
+    fetch(`${BASE_URL.replace("/api", "")}/api/status`).then((r) => r.json());
+
+export const getBotStatus = () =>
+    fetch(`${BASE_URL}/bot/status`, { headers: headers() }).then((r) => r.json());
+
 export const exportCSV = (type, periode) =>
     fetch(`${BASE_URL}/admin/export/${type}?periode=${periode}`, { headers: headers() });

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Card, Row, Col } from 'react-bootstrap'
 import { Line, Bar, Doughnut } from 'react-chartjs-2'
-import { getStats } from '../api'
+import { getStats, getBotStatus } from '../api'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -24,11 +24,15 @@ function Dashboard() {
   const [activite, setActivite] = useState(null)
   const [presences, setPresences] = useState(null)
   const [notes, setNotes] = useState(null)
+  const [botEnLigne, setBotEnLigne] = useState(null)
 
   useEffect(() => {
     getStats('activite').then(setActivite).catch(() => {})
     getStats('presences').then(setPresences).catch(() => {})
     getStats('notes').then(setNotes).catch(() => {})
+    getBotStatus()
+      .then(s => setBotEnLigne(s?.botHttp?.connected === true))
+      .catch(() => setBotEnLigne(false))
   }, [])
 
   const kpis = [
@@ -78,7 +82,17 @@ function Dashboard() {
 
   return (
     <div>
-      <h4 className="mb-4">Tableau de bord</h4>
+      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h4 className="mb-0">Tableau de bord</h4>
+        {botEnLigne !== null && (
+          <span style={{ fontSize: '0.85rem' }}>
+            Bot Discord :{' '}
+            <span style={{ color: botEnLigne ? '#198754' : '#dc3545', fontWeight: 600 }}>
+              {botEnLigne ? '● En ligne' : '● Hors ligne'}
+            </span>
+          </span>
+        )}
+      </div>
 
       <Row className="mb-4 g-3">
         {kpis.map(kpi => (
