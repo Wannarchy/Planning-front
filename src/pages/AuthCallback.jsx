@@ -53,14 +53,11 @@ function AuthCallback({ onLogin }) {
   }, [params, navigate, onLogin])
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#f8f9fa',
-    }}>
-      <p className="text-muted">Connexion en cours...</p>
+    <div className="auth-page">
+      <div className="auth-card text-center">
+        <div className="spinner-border text-primary mb-3" role="status" />
+        <p className="text-muted mb-0">Connexion en cours...</p>
+      </div>
     </div>
   )
 }

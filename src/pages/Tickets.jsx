@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Table, Badge, Button, Modal, Form } from 'react-bootstrap'
 import { getTickets, updateTicket } from '../api'
+import PageHeader from '../components/PageHeader'
 
 const couleurStatut = {
   'Ouvert': 'danger',
@@ -24,7 +25,7 @@ function Tickets() {
     try {
       const data = await getTickets()
       setTickets(Array.isArray(data) ? data : [])
-    } catch (e) {
+    } catch {
       setErreur('Impossible de charger les tickets.')
     } finally {
       setChargement(false)
@@ -42,10 +43,14 @@ function Tickets() {
     : tickets.filter(t => t.statut === filtre)
 
   return (
-    <div>
-      <h4 className="mb-4">Gestion des tickets</h4>
+    <div className="page">
+      <PageHeader title="Tickets" subtitle={`${tickets.length} ticket(s) au total`}>
+        <Button variant="outline-primary" size="sm" onClick={chargerTickets} disabled={chargement}>
+          Actualiser
+        </Button>
+      </PageHeader>
 
-      <div className="d-flex gap-2 mb-4">
+      <div className="filter-bar">
         {['Tous', 'Ouvert', 'En cours', 'Fermé'].map(statut => (
           <Button
             key={statut}
@@ -60,57 +65,62 @@ function Tickets() {
 
       {erreur && <div className="alert alert-danger">{erreur}</div>}
 
-      <div className="card border-0 shadow-sm">
+      <div className="admin-card card">
         <div className="card-body p-0">
           {chargement ? (
-            <div className="text-center py-5 text-muted">Chargement...</div>
+            <div className="empty-state">Chargement...</div>
           ) : ticketsFiltres.length === 0 ? (
-            <div className="text-center py-5 text-muted">Aucun ticket trouvé.</div>
+            <div className="empty-state">Aucun ticket trouvé.</div>
           ) : (
-            <Table hover responsive className="mb-0">
-              <thead style={{ backgroundColor: '#f8f9fa' }}>
-                <tr>
-                  <th>ID</th>
-                  <th>Message</th>
-                  <th>Statut</th>
-                  <th>Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ticketsFiltres.map(ticket => (
-                  <tr key={ticket.id}>
-                    <td className="fw-bold">#{ticket.id}</td>
-                    <td style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {ticket.message}
-                    </td>
-                    <td>
-                      <Badge bg={couleurStatut[ticket.statut] || 'secondary'}>
-                        {ticket.statut}
-                      </Badge>
-                    </td>
-                    <td>{ticket.date_creation ? new Date(ticket.date_creation).toLocaleDateString('fr-FR') : '-'}</td>
-                    <td>
-                      <Button variant="outline-primary" size="sm" onClick={() => setTicketSelectionne(ticket)}>
-                        Voir
-                      </Button>
-                    </td>
+            <div className="table-wrap">
+              <Table hover className="mb-0">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Message</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                    <th></th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody>
+                  {ticketsFiltres.map(ticket => (
+                    <tr key={ticket.id}>
+                      <td className="fw-bold">#{ticket.id}</td>
+                      <td style={{ maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {ticket.message}
+                      </td>
+                      <td>
+                        <Badge bg={couleurStatut[ticket.statut] || 'secondary'}>
+                          {ticket.statut}
+                        </Badge>
+                      </td>
+                      <td style={{ whiteSpace: 'nowrap' }}>
+                        {ticket.date_creation ? new Date(ticket.date_creation).toLocaleDateString('fr-FR') : '-'}
+                      </td>
+                      <td>
+                        <Button variant="outline-primary" size="sm" onClick={() => setTicketSelectionne(ticket)}>
+                          Voir
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
           )}
         </div>
       </div>
 
-      <Modal show={!!ticketSelectionne} onHide={() => setTicketSelectionne(null)}>
+      <Modal show={!!ticketSelectionne} onHide={() => setTicketSelectionne(null)} fullscreen="sm-down">
         <Modal.Header closeButton>
           <Modal.Title>Ticket #{ticketSelectionne?.id}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p><strong>Date :</strong> {ticketSelectionne?.date_creation ? new Date(ticketSelectionne.date_creation).toLocaleDateString('fr-FR') : '-'}</p>
-          <p><strong>Message :</strong> {ticketSelectionne?.message}</p>
-          <p><strong>Statut actuel :</strong>{' '}
+          <p><strong>Message :</strong></p>
+          <p style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{ticketSelectionne?.message}</p>
+          <p><strong>Statut :</strong>{' '}
             <Badge bg={couleurStatut[ticketSelectionne?.statut] || 'secondary'}>
               {ticketSelectionne?.statut}
             </Badge>

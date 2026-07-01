@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { Card, Row, Col, Tab, Tabs, Table, Button, Badge, Spinner } from 'react-bootstrap'
 import { Bar, Line, Doughnut } from 'react-chartjs-2'
 import { getStats } from '../api'
+import PageHeader from '../components/PageHeader'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -40,23 +41,25 @@ function parsePourcent(v) {
 }
 
 function TableauRecap({ colonnes, lignes }) {
-  if (!lignes.length) return <p className="text-muted text-center py-3 mb-0">Aucune donnée</p>
+  if (!lignes.length) return <p className="empty-state py-3 mb-0">Aucune donnée</p>
   return (
-    <Table size="sm" hover className="mb-0">
-      <thead style={{ backgroundColor: '#f8f9fa' }}>
-        <tr>
-          {colonnes.map(c => <th key={c}>{c}</th>)}
-        </tr>
-      </thead>
-      <tbody>
-        {lignes.map(([label, value]) => (
-          <tr key={label}>
-            <td className="fw-semibold">{label}</td>
-            <td>{value}</td>
+    <div className="table-wrap">
+      <Table size="sm" hover className="mb-0">
+        <thead>
+          <tr>
+            {colonnes.map(c => <th key={c}>{c}</th>)}
           </tr>
-        ))}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {lignes.map(([label, value]) => (
+            <tr key={label}>
+              <td className="fw-semibold">{label}</td>
+              <td>{value}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </div>
   )
 }
 
@@ -153,34 +156,28 @@ function Statistiques() {
     : null
 
   return (
-    <div>
-      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <h4 className="mb-0">Statistiques</h4>
+    <div className="page">
+      <PageHeader title="Statistiques" subtitle="Analyses détaillées par promotion et module">
         <Button variant="outline-primary" size="sm" onClick={charger} disabled={chargement}>
           {chargement ? <><Spinner size="sm" className="me-1" /> Chargement...</> : 'Actualiser'}
         </Button>
-      </div>
+      </PageHeader>
 
       {erreur && <div className="alert alert-warning">{erreur}</div>}
 
-      <Row className="mb-4 g-3">
+      <Row className="kpi-grid g-3">
         {kpis.map(kpi => (
           <Col key={kpi.label} xs={12} sm={6} xl={3}>
-            <Card className="border-0 shadow-sm h-100">
-              <Card.Body className="d-flex align-items-center gap-3">
-                <div style={{
-                  fontSize: '1.8rem',
-                  backgroundColor: kpi.color + '18',
-                  padding: '10px 14px',
-                  borderRadius: '12px',
-                }}>
+            <Card className="kpi-card">
+              <Card.Body>
+                <div className="kpi-icon" style={{ backgroundColor: kpi.color + '18' }}>
                   {kpi.icon}
                 </div>
                 <div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: '700', color: kpi.color }}>
+                  <div className="kpi-value" style={{ color: kpi.color }}>
                     {chargement ? '...' : kpi.value}
                   </div>
-                  <div style={{ fontSize: '0.8rem', color: '#6c757d' }}>{kpi.label}</div>
+                  <div className="kpi-label">{kpi.label}</div>
                 </div>
               </Card.Body>
             </Card>
@@ -192,7 +189,7 @@ function Statistiques() {
         <Row className="mb-4 g-3">
           {meilleurePromo && (
             <Col xs={12} md={6}>
-              <Card className="border-0 shadow-sm border-start border-4 border-success">
+              <Card className="admin-card border-start border-4 border-success">
                 <Card.Body className="py-3">
                   <span className="text-muted" style={{ fontSize: '0.85rem' }}>Meilleure moyenne</span>
                   <div className="fw-bold">{meilleurePromo[0]} — {meilleurePromo[1]}</div>
@@ -202,7 +199,7 @@ function Statistiques() {
           )}
           {pirePresence && (
             <Col xs={12} md={6}>
-              <Card className="border-0 shadow-sm border-start border-4 border-warning">
+              <Card className="admin-card border-start border-4 border-warning">
                 <Card.Body className="py-3">
                   <span className="text-muted" style={{ fontSize: '0.85rem' }}>Présence la plus faible</span>
                   <div className="fw-bold">{pirePresence[0]} — {pirePresence[1]}</div>
@@ -213,7 +210,7 @@ function Statistiques() {
         </Row>
       )}
 
-      <Card className="border-0 shadow-sm">
+      <Card className="admin-card">
         <Card.Body>
           <Tabs defaultActiveKey="presences" className="mb-3">
             <Tab eventKey="presences" title="Présences">
@@ -347,7 +344,7 @@ function Statistiques() {
                   },
                 ].map(item => (
                   <Col key={item.label} xs={12} sm={6} lg={3}>
-                    <Card className="border-0 shadow-sm">
+                    <Card className="admin-card">
                       <Card.Body>
                         <div className="text-muted mb-2" style={{ fontSize: '0.85rem' }}>{item.label}</div>
                         <Badge bg={item.badge} style={{ fontSize: '1.1rem', padding: '8px 14px' }}>
