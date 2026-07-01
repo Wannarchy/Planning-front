@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
+import { BASE_URL } from '../api'
 
 function Login() {
   const [erreur, setErreur] = useState('')
@@ -16,7 +15,7 @@ function Login() {
   }, [searchParams, setSearchParams])
 
   const handleDiscordLogin = () => {
-    window.location.href = `${API_BASE}/auth/discord`
+    window.location.href = `${BASE_URL}/auth/discord`
   }
 
   return (
